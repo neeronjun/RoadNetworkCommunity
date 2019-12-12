@@ -78,7 +78,7 @@ void D2_calculation(int datasize, double space_length, int dimension, double min
 	//char *inpname = "experimentationFile/synthetic_data/anti/R_10K.txt";
 	//char *output = "experimentationFile/synthetic_data/anti/D2_value.txt";
 
-	string inpname = "C:/Users/nrai/Desktop/cent20.txt";
+	string inpname = "C:/Users/nrai/Desktop/samples30.txt";
 	string output = "C:/Users/nrai/Desktop/D2_value.txt";
 
 	double cell_side_r;
@@ -280,7 +280,7 @@ void generate_samples(double start_x, double start_y, double end_x, double end_y
 
 	double temp_x, temp_y, inc, t, dt, dist = 0, count = 0, a_x, a_y;
 	ofstream outfile;
-	outfile.open("C:/Users/nrai/Desktop/samples20.txt", ios::in | ios::app); // append instead of overwrite
+	outfile.open("C:/Users/nrai/Desktop/samples30.txt", ios::in | ios::app); // append instead of overwrite
 
 	dist = distance(start_x, start_y, end_x, end_y);
 	dt = dist / 10;
@@ -315,7 +315,7 @@ void generate_samples(double start_x, double start_y, double end_x, double end_y
 int main()
 {
 	int datasize = 10000, dimension = 2, count1 = 0, count = 0, j = 0, n = 0;
-	double min = 0.1, max = 10, interval = 2, space_length = 10, length = 2;
+	double min = 0.1, max = 10, interval = 1, space_length = 10, length = 3;
 	double dist, x1, x2, y1, y2;
 	double* traj = new double[500];
 	double start_x, start_y, end_x, end_y;
@@ -324,7 +324,7 @@ int main()
 	int i = 0, x = 0;
 	fin.open("C:/Users/nrai/Desktop/trips-new.txt", ios::in);
 	fcen.precision(18);
-	fcen.open("C:/Users/nrai/Desktop/cent20.txt", ios::in | ios::app);
+	fcen.open("C:/Users/nrai/Desktop/samples30.txt", ios::in | ios::app);
 	string line, word, temp;
 
 	cout.precision(18); 
@@ -404,7 +404,8 @@ int main()
 
 		}
 		//cout << count << endl;
-	}*/
+	}
+	*/
 	std::cout << "Hello World!\n";
 
 	//estimate_neighbor();	
