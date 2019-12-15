@@ -1,4 +1,4 @@
-// video_traj_analysis.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// length_tuning.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include<string>
@@ -78,7 +78,7 @@ void D2_calculation(int datasize, double space_length, int dimension, double min
 	//char *inpname = "experimentationFile/synthetic_data/anti/R_10K.txt";
 	//char *output = "experimentationFile/synthetic_data/anti/D2_value.txt";
 
-	string inpname = "C:/Users/nrai/Desktop/samples30.txt";
+	string inpname = "C:/Users/nrai/Desktop/samples2.txt";
 	string output = "C:/Users/nrai/Desktop/D2_value.txt";
 
 	double cell_side_r;
@@ -167,7 +167,6 @@ void D2_calculation(int datasize, double space_length, int dimension, double min
 		int comparison_count = 0;
 		for (int i = 0; i < iterations-1; i++)
 		for (int j = i + 1; j < iterations;j++)
-
 		{
 		comparison_count++;
 		D2 += (fractal_dimensions[2  j] - fractal_dimensions[2  i]) / ((fractal_dimensions[2  j + 1] - fractal_dimensions[2  i + 1]));
@@ -280,7 +279,7 @@ void generate_samples(double start_x, double start_y, double end_x, double end_y
 
 	double temp_x, temp_y, inc, t, dt, dist = 0, count = 0, a_x, a_y;
 	ofstream outfile;
-	outfile.open("C:/Users/nrai/Desktop/samples30.txt", ios::in | ios::app); // append instead of overwrite
+	outfile.open("C:/Users/nrai/Desktop/samples20.txt", ios::in | ios::app); // append instead of overwrite
 
 	dist = distance(start_x, start_y, end_x, end_y);
 	dt = dist / 10;
@@ -303,19 +302,44 @@ void generate_samples(double start_x, double start_y, double end_x, double end_y
 			a_y = 10 * (temp_y + 122.73) / (-71.9 + 122.73) + 0;
 			//if (a_x > 0 && a_x < 10 && a_y > 0 && a_y < 10)
 			outfile << count++ << ", " << a_x << ", " << a_y << endl;
-			//cout << count << ", " << a_x << ", " << a_y << endl;
-			//cout << "SDFSD:" << distance(start_x, start_y, temp_x, temp_y) << endl;
-
 		}
-		//outfile << "asdfasd" << endl;
 	}
 	outfile.close();
 }
 
+double cost_calc(double h, double w, double l, double D2s, double D2c, int N) {
+	double cost = 0, x1, x2, x3;
+	x1 = powf((h + l) * (w + l), (D2c / 2));
+	x2 = l * (D2c / 2) * (powf((h + l) * (w + l), (D2c / 2) - 1) * (h + w + 2 * l));
+	x3 = powf(h * w, (D2s / 2));
+	std::cout << "x1 = " << x1 << ",  x2 = " << x2 << ", x3 = " << x3 << endl;
+	cost = (N - 1) * (x1 + x2) - N * x3;
+	//cost = (N - 1) * ((powf((h + l) * (w + l), (D2c / 2))) + l * (D2c / 2) * (powf((h + l) * (w + l), (D2c / 2) - 1) * (h + w + 2 * l))) - N * powf(h * w, (D2s / 2));
+	//cost = (N - 1) * (powf((h * w ), (D2c / 2)))  - N * powf(h * w, (D2s / 2));
+	return cost;
+}
+
+double binary_search(double h, double w, double l, double D2s, double D2c, int N) {
+	double l_opt = -1, cost = 100, l_left = 0, l_right = l, temp = 0;
+	while (cost > 1 || cost < -1) {
+		temp = (l_left + l_right) / 2;
+		std::cout << temp << endl;
+		cost = cost_calc(h, w, temp, D2s, D2c, N);
+		if (cost > 0) {
+			l_right = temp;
+		}
+		else {
+			l_left = temp;
+		}
+	}
+	std::cout << "l_left = " << l_left << "l_right = " << l_right << endl;
+	return l_opt;
+}
+
 int main()
 {
-	int datasize = 10000, dimension = 2, count1 = 0, count = 0, j = 0, n = 0;
-	double min = 0.1, max = 10, interval = 1, space_length = 10, length = 3;
+	int datasize = 2906387, dimension = 2, count1 = 0, count = 0, j = 0, n = 0;
+	double min = 0.1, max = 10, interval = 1, space_length = 10, length = 2;
 	double dist, x1, x2, y1, y2;
 	double* traj = new double[500];
 	double start_x, start_y, end_x, end_y;
@@ -324,15 +348,14 @@ int main()
 	int i = 0, x = 0;
 	fin.open("C:/Users/nrai/Desktop/trips-new.txt", ios::in);
 	fcen.precision(18);
-	fcen.open("C:/Users/nrai/Desktop/samples30.txt", ios::in | ios::app);
+	fcen.open("C:/Users/nrai/Desktop/cents20.txt", ios::in | ios::app);
 	string line, word, temp;
 
-	cout.precision(18); 
+	cout.precision(18);
 	/*while (fin >> temp) {
 		j = 0;
 		count = 0;
 		getline(fin, line);
-
 		stringstream s(line);
 		//count1 = 0;
 		while (getline(s, word, '\t')) {
@@ -353,43 +376,34 @@ int main()
 		//cout << "x1:" << x1 << "y1:" << y1 << "x2:" << traj[n * 2 - 1] << "y2:" << traj[2 * n] << endl;
 		//cout << distance(x1, y1, traj[2 * n - 1], traj[n * 2]) << endl;
 		//generate_samples(x1, y1, traj[2 * n - 1], traj[2 * n]);
-
 		start_x = x1, start_y = y1;
 		//calculate centers
 		for (int k = 0; k < n - 1; k++) {
 			x2 = traj[j++];
 			y2 = traj[j++];
-
 			dist = distance(x1, y1, x2, y2);
 			//cout << "distnace: " << dist << endl;
 			sum_dist += dist;
 			//cout << "sum_dist: " << sum_dist << endl;
-			if (sum_dist > 0.5) {
-
+			if (sum_dist > length/2) {
 				sum_dist = sum_dist - dist;
 				dt = length - sum_dist;
 				t = dt / dist;
-
 				//cout << "dt: " << dt << endl;
 				//t = dt / d;
 				end_x = ((1 - t) * x1 + t * x2);
 				end_y = ((1 - t) * y1 + t * y2);
-
-
 				center_x = (start_x + end_x) / 2;
 				center_y = (start_y + end_y) / 2;
-
 				a_x = 10 * (center_x - 29.21) / (43.75 - 29.21) + 0;
 				a_y = 10 * (center_y + 122.73) / (-71.9 + 122.73) + 0;
 				//if (a_x > 0 && a_x < 10 && a_y > 0 && a_y < 10)
 				fcen << count << ", " << a_x << ", " << a_y << endl;
-
 				generate_samples(start_x, start_y, end_x, end_y);
 				start_x = end_x, start_y = end_y;
 				sum_dist = 0;
 				x2 = end_x, y2 = end_y;
 			}
-
 			if (k == n - 2) {
 				//cout << "n:::" << distance(start_x, start_y, x2, y2) << endl;
 				center_x = (start_x + x2) / 2;
@@ -401,16 +415,17 @@ int main()
 				//cout << "n::kk:" << distance(centers[0], centers[1], start_x, start_y) << endl;
 			}
 			x1 = x2, y1 = y2;
-
 		}
 		//cout << count << endl;
-	}
-	*/
+	}*/
+
 	std::cout << "Hello World!\n";
 
+	cout << "cost: " << binary_search(6, 6, 3, 0.595512574, 0.587641719, 112301) << endl;
+	//cout << "cost: " << cost_calc(6, 6, 0.0, 0.5701053, 0.56721423, 179184) << endl;
 	//estimate_neighbor();	
 
-	D2_calculation(datasize, space_length, dimension, min, max, interval);
+	//D2_calculation(datasize, space_length, dimension, min, max, interval);
 	//fcen.close();
 	fin.close();
 	delete[] traj;
