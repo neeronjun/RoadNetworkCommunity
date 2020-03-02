@@ -1,0 +1,7 @@
+﻿  RoadNetworkCommunity.cpp
+C:\Users\nrai\source\repos\RoadNetworkCommunity\RoadNetworkCommunity.cpp(46,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Generating code
+  Compiler version has changed, fall back to full compilation.
+  All 1694 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  RoadNetworkCommunity.vcxproj -> C:\Users\nrai\source\repos\RoadNetworkCommunity\Release\RoadNetworkCommunity.exe
